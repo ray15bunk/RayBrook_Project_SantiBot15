@@ -1,0 +1,315 @@
+<!DOCTYPE html> <!-- הכרזה על HTML5 -->
+<html lang="he" dir="rtl"> <!-- שפה עברית, כיוון מימין לשמאל -->
+
+<head>
+  <meta charset="UTF-8"> <!-- קידוד UTF-8 -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- התאמה למסכים שונים -->
+  <title>Project_Santi-Bot</title> <!-- כותרת הדף -->
+
+  <style>
+    /* --- עיצוב גוף הדף --- */
+    body {
+      background-color: #212121; /* צבע רקע כהה */
+      color: #e0e0e0; /* צבע טקסט בהיר */
+      font-family: Arial, sans-serif; /* פונט כללי */
+      margin: 0; /* ביטול מרווח ברירת מחדל */
+      display: flex; /* שימוש ב-flexbox */
+      min-height: 100vh; /* גובה מינימום מלא של החלון */
+    }
+
+    /* --- סרגל צד --- */
+    .sidebar {
+      background-color: #181818; /* צבע רקע הסרגל */
+      width: 220px; /* רוחב סרגל */
+      padding: 20px; /* ריווח פנימי */
+      box-shadow: 2px 0 5px rgba(0,0,0,0.5); /* צל */
+      position: fixed; /* מיקום קבוע */
+      top: 0; /* למעלה */
+      right: 0; /* מימין */
+      height: 100%; /* גובה מלא */
+    }
+
+    .sidebar h2 {
+      color: #ffffff; /* צבע כותרת */
+      font-size: 1.5rem; /* גודל פונט */
+      margin-bottom: 20px; /* ריווח תחתון */
+      border-bottom: 2px solid #007bff; /* קו תחתון כחול */
+      padding-bottom: 10px; /* ריווח פנימי מתחת לכותרת */
+    }
+
+    .sidebar ul {
+      list-style: none; /* ביטול נקודות ברשימה */
+      padding: 0; /* ביטול ריווח פנימי */
+      margin: 0; /* ביטול שוליים */
+    }
+
+    .sidebar ul li {
+      margin: 15px 0; /* מרווח בין פריטים */
+    }
+
+    .sidebar ul li a {
+      color: #e0e0e0; /* צבע קישור */
+      text-decoration: none; /* ביטול קו תחתון */
+      font-size: 1.1rem; /* גודל פונט */
+      transition: color 0.3s ease; /* שינוי צבע חלק */
+      cursor: pointer; /* סמן יד */
+    }
+
+    .sidebar ul li a:hover {
+      color: #007bff; /* שינוי צבע בהעברת עכבר */
+    }
+
+    /* --- תוכן הדף --- */
+    .content-container {
+      flex: 1; /* תופס את כל השטח הפנוי */
+      padding: 30px; /* ריווח פנימי */
+      max-width: 900px; /* רוחב מקסימלי */
+      margin: 0 auto; /* מרכז אופקי */
+      margin-right: 260px; /* ריווח מימין לסרגל צד */
+    }
+
+    .page-title {
+      color: #ffffff; /* צבע כותרת */
+      font-size: 2rem; /* גודל כותרת */
+      text-align: center; /* יישור מרכזי */
+    }
+
+    p {
+      font-size: 1.2rem; /* גודל פסקה */
+      line-height: 1.5; /* גובה שורה */
+      text-align: center; /* יישור מרכזי */
+    }
+
+    /* --- קונטיינר סרטון --- */
+    .video-section {
+      position: relative; /* מיקום יחסי לאלמנטים פנימיים */
+      width: 100%; /* רוחב מלא */
+      max-width: 600px; /* רוחב מקסימלי */
+      margin: 20px auto; /* ריווח אנכי ומרכז אופקי */
+      padding: 10px; /* ריווח פנימי */
+      background-color: #212121; /* צבע רקע */
+      box-sizing: border-box; /* חישוב כולל padding */
+      height: 340px; /* גובה */
+      border-radius: 8px; /* פינות מעוגלות */
+    }
+
+    .video-section img {
+      position: absolute; /* מיקום על הקונטיינר */
+      top: 0; /* למעלה */
+      left: 0; /* שמאל */
+      width: 100%; /* רוחב מלא */
+      height: 100%; /* גובה מלא */
+      object-fit: contain; /* שמירה על יחס תמונה */
+      cursor: pointer; /* סמן יד */
+      border-radius: 8px; /* פינות מעוגלות */
+      border: 3px solid #007bff; /* מסגרת כחולה */
+    }
+
+    .video-player {
+      position: absolute; /* מיקום על התמונה */
+      top: 0;
+      left: 0;
+      width: 100%; /* רוחב מלא */
+      height: 100%; /* גובה מלא */
+      border-radius: 8px; /* פינות מעוגלות */
+      display: none; /* נסתר כברירת מחדל */
+      background: #000; /* רקע שחור */
+      border: 3px solid #007bff; /* מסגרת כחולה */
+    }
+
+    .video-player.show {
+      display: block; /* מוצג כאשר לוחצים על התמונה */
+    }
+
+    .video-player iframe {
+      width: 100%; /* רוחב מלא */
+      height: 100%; /* גובה מלא */
+      border-radius: 8px; /* פינות מעוגלות */
+    }
+
+    /* --- קטגוריות --- */
+    .category {
+      display: none; /* מוסתר כברירת מחדל */
+    }
+
+    .category.active {
+      display: block; /* מוצג כאשר פעיל */
+    }
+
+    /* בדיקות - טקסט מעל הסרטון */
+    .doc-date {
+      font-size: 1.3rem; /* גודל פונט */
+      font-weight: bold; /* מודגש */
+      color: #ffffff; /* צבע טקסט */
+      text-align: center; /* יישור מרכזי */
+      margin-bottom: 15px; /* ריווח תחתון */
+      background: rgba(0, 123, 255, 0.2); /* רקע כחול חצי שקוף */
+      padding: 10px; /* ריווח פנימי */
+      border-radius: 6px; /* פינות מעוגלות */
+    }
+
+    /* --- עיצוב כפתור ההורדה --- */
+    .download-button {
+      display: inline-block; 
+      background-color: #007bff; /* כחול */
+      color: #ffffff !important; /* טקסט לבן */
+      padding: 12px 30px; 
+      text-decoration: none; 
+      border-radius: 8px; 
+      font-size: 1.3rem !important; 
+      font-weight: bold; 
+      transition: background-color 0.3s ease; 
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.4); 
+    }
+
+    .download-button:hover {
+      background-color: #0056b3; 
+      text-decoration: none;
+    }
+  </style>
+</head>
+
+<body>
+  <!-- סרגל צד -->
+  <nav class="sidebar">
+    <h2>קטגוריות</h2> <!-- כותרת סרגל צד -->
+    <ul>
+      <li><a onclick="showCategory('home')">בית</a></li> <!-- הצגת קטגוריית הבית -->
+      <li><a onclick="showCategory('tests')">בדיקות</a></li> <!-- הצגת קטגוריית הבדיקות -->
+      <li><a onclick="showCategory('book')">הספר פרוייקט שלי 📚</a></li>
+    </ul>
+  </nav>
+
+  <!-- תוכן הדף -->
+  <main class="content-container">
+    <!-- קטגוריית הבית -->
+    <div id="home" class="category active"> <!-- פעילה כברירת מחדל -->
+      <h1 class="page-title">רובה מגנטי</h1>
+      <p>לחצו על התמונה כדי לצפות בסרטון.</p>
+      <div class="video-section">
+        <img id="thumb1" src="Picture1.png" alt="רובה מגנטי">
+        <div id="player1" class="video-player">
+          <iframe id="iframe1" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+
+      <h1 class="page-title">מיני ראדאר</h1>
+      <p>לחצו על התמונה כדי לצפות בסרטון.</p>
+      <div class="video-section">
+        <img id="thumb2" src="Picture2.png" alt="מיני ראדאר">
+        <div id="player2" class="video-player">
+          <iframe id="iframe2" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+
+    <!-- קטגוריית בדיקות -->
+    <div id="tests" class="category">
+      <h1 class="page-title">בדיקות</h1>
+      <div class="doc-date">תיעוד 5.9.25</div>
+          <p style="text-align:center; color:#ffffff; margin-bottom:10px;">בדיקת אופן פעולת חיישן אולטרסוניק ומדידת המתחים.</p>
+        <div class="video-section">
+          <img id="thumb3" src="https://img.youtube.com/vi/qJxPFXFTNug/hqdefault.jpg" alt="בדיקת אולטרסוניק">
+        <div id="player3" class="video-player">
+          <iframe id="iframe3" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+        </div>
+        <div class="doc-date">תיעוד 21.9.25</div>
+          <p style="text-align:center; color:#ffffff; margin-bottom:10px;">בדיקה: מופיעות נקודות צהובות על המסך שמציד את הרדאר.</p>
+        <div class="video-section">
+          <img id="thumb4" src="https://img.youtube.com/vi/8BiuVFxUo20/hqdefault.jpg" alt="בדיקות">
+        <div id="player4" class="video-player">
+          <iframe id="iframe4" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+       </div>
+        <div class="doc-date">תיעוד 23.9.25</div>
+          <p style="text-align:center; color:#ffffff; margin-bottom:10px;">בדיקה: סינכרון של המנוע סרוו השני עם הסרוו הראשון.</p>
+        <div class="video-section">
+          <img id="thumb5" src="https://img.youtube.com/vi/eeDQquCGN5I/hqdefault.jpg" alt="בדיקות">
+        <div id="player5" class="video-player">
+         <iframe id="iframe5" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+        </div>
+       </div>
+          <div class="doc-date">תיעוד 27.9.25</div>
+          <p style="text-align:center; color:#ffffff; margin-bottom:10px;">סרטון זה מציג את אופן פעולת המסך טאץ' יחד עם בדיקת המתחים מהפינים במיקרו בקר אליהם המסך מחובר.</p>
+            <div class="video-section">
+             <img id="thumb6" src="https://img.youtube.com/vi/a2xaMos41Qk/hqdefault.jpg" alt="בדיקת מסך טאץ' ומתחים">
+            <div id="player6" class="video-player">
+             <iframe id="iframe6" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+        <div class="doc-date">תיעוד 28.9.25</div>
+        <p style="text-align:center; color:#ffffff; margin-bottom:10px;">זהו סרטון שמציג את אופן הפעולה של המערכת לאחר שאני מצרף אליה מסך שני שלי בפרויקט.</p>
+        <div class="video-section">
+            <img id="thumb7" src="https://i.ytimg.com/vi/rToKhwszY90/0.jpg" alt="בדיקת מסך שני">
+            <div id="player7" class="video-player">
+                <iframe id="iframe7" src="" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+        </div>
+    </div>
+    <div id="book" class="category">
+     <h1 class="page-title">הספר פרוייקט שלי</h1>
+       <p style="font-size: 1.4rem; line-height: 1.6; text-align: right; padding: 0 20px;">
+        זהו הספר פרוייקט שלי. כאן ניתן למצוא סיכום על כל הרכיבים בהם השתמשתי. 
+        בנוסף, בספר זה ניתן למצוא קישורים לסרטונים שלי בהם אני מדגים את אופן הבנייה של 
+        הערכות ושל אופן פעולת המערכות השונות. כמו כן, ניתן למצוא את הקישור אל האתר 
+        בו אתם נמצאים ממש עכשיו, ובו גם כן ניתן לראות את סרטוני התיעוד שהם למעשה חלק 
+        בלתי נפרד מהתהליך של בניית הפרויקט שלי וחלק משמעותי מאוד מהלמידה עליו.
+       </p>
+     <div style="text-align: center; margin-top: 40px;">
+       <a 
+       href="/project_book.pdf"   download="הספר-פרויקט-שלי.pdf"
+       target="_blank"
+       class="download-button"
+       >
+       ⬇️ להורדת הספר (PDF)
+       </a>
+     </div>
+    </div>
+  </main>
+
+  <script>
+    // פונקציה לשינוי קטגוריה
+    function showCategory(categoryId) {
+      document.querySelectorAll('.category').forEach(c => c.classList.remove('active')); // הסרת 'active' מכל הקטגוריות
+      document.getElementById(categoryId).classList.add('active'); // הוספת 'active' לקטגוריה שנבחרה
+    }
+
+    // פונקציה להפעלת סרטון בלחיצה על התמונה
+    function setupVideo(thumbId, playerId, iframeId, url) {
+      const thumb = document.getElementById(thumbId); // התמונה לחיצה
+      const player = document.getElementById(playerId); // קונטיינר הסרטון
+      const iframe = document.getElementById(iframeId); // iframe יוטיוב
+
+      thumb.addEventListener('click', e => {
+        e.stopPropagation(); // מונע הפצת האירוע לגוף הדף
+        iframe.src = url + "?autoplay=1"; // הפעלת הסרטון אוטומטית
+        thumb.style.display = "none"; // הסתרת התמונה
+        player.classList.add("show"); // הצגת הקונטיינר עם ה-iframe
+      });
+
+      function closeVideo() {
+        iframe.src = ""; // עצירת הסרטון
+        player.classList.remove("show"); // הסתרת הקונטיינר
+        thumb.style.display = "block"; // הצגת התמונה מחדש
+      }
+
+      // סגירת הסרטון בלחיצה מחוץ לו
+      document.body.addEventListener('click', e => {
+        if (player.classList.contains("show") && !player.contains(e.target) && !thumb.contains(e.target)) {
+          closeVideo();
+        }
+      });
+    }
+
+    // הגדרת כל שלושת הסרטונים
+    setupVideo("thumb1", "player1", "iframe1", "https://www.youtube.com/embed/5IMt-HXeCIk");
+    setupVideo("thumb2", "player2", "iframe2", "https://www.youtube.com/embed/TOxmNhN4LiU");
+    setupVideo("thumb3", "player3", "iframe3", "https://www.youtube.com/embed/qJxPFXFTNug");
+    setupVideo("thumb4", "player4", "iframe4", "https://www.youtube.com/embed/8BiuVFxUo20"); 
+    setupVideo("thumb5", "player5", "iframe5", "https://www.youtube.com/embed/eeDQquCGN5I");
+    setupVideo("thumb6", "player6", "iframe6", "https://www.youtube.com/embed/a2xaMos41Qk");
+    setupVideo("thumb7", "player7", "iframe7", "https://www.youtube.com/embed/rToKhwszY90");
+  </script>
+</body>
+</html>
